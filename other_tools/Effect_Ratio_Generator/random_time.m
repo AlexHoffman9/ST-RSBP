@@ -1,6 +1,8 @@
 function output = random_time(num, end_time, T_REF)
-%RANDOM_TIME Summary of this function goes here
-%   Detailed explanation goes here
+%RANDOM_TIME Constructs a spike train vector
+%   num : number of spikes in the train
+%   end_time : maximum time length of the spike train
+%   T_REF : minimum step between two spikes
 record=0;
 output = [];
 while(record<num)
