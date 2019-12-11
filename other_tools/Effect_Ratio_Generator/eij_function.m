@@ -5,7 +5,7 @@ clearvars;
 num_oi      = 1:1:50;
 num_oj      = 1:1:50;
 T_REF       = 2;
-end_time    = 800;
+end_time    = 400;
 TAU_M       = 64;
 TAU_S       = 8;
 iteration   = 1000;
