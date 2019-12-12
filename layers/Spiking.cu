@@ -356,6 +356,7 @@ void Spiking::backpropagation()
     dim3 thread = dim3(min(1024, outputSize));
     dim3 block  = dim3(batch, inputSize);
     cudaFuncSetCacheConfig(g_Spiking_synaptic_effect, cudaFuncCachePreferL1);
+    // I modified this to compute the effect ratio, so don't need the other functions
     g_Spiking_synaptic_effect<<<block, thread>>>(
         inputs_time_format->getDev(),
         outputs_time->getDev(),
@@ -389,36 +390,41 @@ void Spiking::backpropagation()
     	checkCudaErrors(cudaStreamSynchronize(0));
     	getLastCudaError("g_Spiking_self_synaptic_effect");
 	}
+    
+    /*
+        Following commented code no longer needed because I reverted back to approximation
+        for effect ratio that is computed in g_spiking_synaptic_effect
+    */
 
-	thread = dim3(min(1024, inputSize));
-	block  = dim3(batch, outputSize);
-	g_Spiking_effect_ratio<<<block, thread, sizeof(float) * min(1024, inputSize)>>>(
-		w->getDev(),
-        w_self == NULL ? NULL : w_self->getDev(),
-		sumEffectRatio->getDev(),
-        preFireCount_format->getDev(),
-    	fireCount->getDev(),
-		effectPoly->getDev(),
-		100,
-		5,
-		inputSize,
-		outputSize,
-		threshold);
-	checkCudaErrors(cudaStreamSynchronize(0));
-	getLastCudaError("g_Spiking_effect_ratio");
+	// thread = dim3(min(1024, inputSize));
+	// block  = dim3(batch, outputSize);
+	// g_Spiking_effect_ratio<<<block, thread, sizeof(float) * min(1024, inputSize)>>>(
+	// 	w->getDev(),
+    //     w_self == NULL ? NULL : w_self->getDev(),
+	// 	sumEffectRatio->getDev(),
+    //     preFireCount_format->getDev(),
+    // 	fireCount->getDev(),
+	// 	effectPoly->getDev(),
+	// 	100,
+	// 	5,
+	// 	inputSize,
+	// 	outputSize,
+	// 	threshold);
+	// checkCudaErrors(cudaStreamSynchronize(0));
+	// getLastCudaError("g_Spiking_effect_ratio");
 
-	g_Spiking_final_effect_ratio<<<block, thread>>>(
-		w->getDev(),
-        preFireCount_format->getDev(),
-        fireCount->getDev(),
-		effectRatio->getDev(),
-		sumEffectRatio->getDev(),
-		accEffect->getDev(),
-		inputSize,
-		outputSize,
-		threshold);
-	checkCudaErrors(cudaStreamSynchronize(0));
-	getLastCudaError("g_Spiking_final_effect_ratio");
+	// g_Spiking_final_effect_ratio<<<block, thread>>>(
+	// 	w->getDev(),
+    //     preFireCount_format->getDev(),
+    //     fireCount->getDev(),
+	// 	effectRatio->getDev(),
+	// 	sumEffectRatio->getDev(),
+	// 	accEffect->getDev(),
+	// 	inputSize,
+	// 	outputSize,
+	// 	threshold);
+	// checkCudaErrors(cudaStreamSynchronize(0));
+	// getLastCudaError("g_Spiking_final_effect_ratio");
 
     // divide the curDelta by vth
     block = dim3(batch, 1);
@@ -1236,11 +1242,11 @@ __device__ float d_Spiking_gradient(
             if(pre_time > t_post)   continue;
             int s = t_post - t_post_last;
             int t = t_post - pre_time;
-            float factor = exp(-1*max(t - s, 0)/TAU_S)/(1 - TAU_S/TAU_M);
+            float factor = exp(-1*max(t - s, 0)/TAU_S)/(1 - TAU_S/TAU_M); // eq(5)
             sum += factor * (exp(-1*min(s, t)/TAU_M) - exp(-1*min(s, t)/TAU_S));
         }
         t_post_last = t_post + T_REFRAC;
-        acc_response += sum;
+        acc_response += sum; // eq (6) eij
     }
     float delta_w = delta * acc_response;
     return delta_w;
@@ -1713,8 +1719,8 @@ __global__ void g_Spiking_wgrad_spiketime(
         if(i_idx < inputSize)
         {
 
-            float compen_effect = acc_effect[i_idx + o_idx * inputSize]/sum_effect;
-            float delta_w = delta * compen_effect * latFac;
+            float compen_effect = acc_effect[i_idx + o_idx * inputSize]/sum_effect; // eij/sum(w*deij/doi)
+            float delta_w = delta * compen_effect * latFac; // compute w gradient. err*eij/sum * factor
 
             wgrad[i_idx + o_idx * inputSize] = delta_w;
         }
@@ -1807,12 +1813,13 @@ __global__ void g_Spiking_synaptic_effect(
         {
             float e = d_Spiking_accumulate_effect_step(output_time, input_time, output_fireCount[o_idx], input_fireCount[i_idx], o_idx, i_idx, outputSize, inputSize, endTime, T_REFRAC, TAU_M, TAU_S);
             acc_effect[i_idx + o_idx * inputSize] = e;
-            //if(effectRatio != NULL){
-            //    int o_cnt = output_fireCount[o_idx];
-            //    int i_cnt = input_fireCount[i_idx];
-            //    float ratio = i_cnt == 0 || o_cnt == 0 ? 1 : e / float(i_cnt);
-            //    effectRatio[i_idx + o_idx * inputSize] = ratio * w[i_idx + o_idx * inputSize];
-            //}
+            // I uncommented this to revert it to HBP version
+            if(effectRatio != NULL){
+               int o_cnt = output_fireCount[o_idx];
+               int i_cnt = input_fireCount[i_idx];
+               float ratio = i_cnt == 0 || o_cnt == 0 ? 1 : e / float(i_cnt);
+               effectRatio[i_idx + o_idx * inputSize] = ratio * w[i_idx + o_idx * inputSize];
+            }
         }
     }
 }
@@ -1884,7 +1891,8 @@ __global__ void g_Spiking_debug_spiketime(
     } 
 }
 
-__device__ float d_Compute_poly(
+// this uses the polynomial coefficients from effectPoly (from matlab script) to compute eij. degree is 4 (5 terms to add)
+__device__ float d_Compute_poly( 
    int i_cnt, 
    int degree, 
    float *effectPoly, 
@@ -1894,7 +1902,8 @@ __device__ float d_Compute_poly(
 	for(int i=0; i< degree ; i++){
 		float base = (float)o_cnt;
 		float exponent = (float)(degree-2-i);
-		float coef=(float)(degree-1-i);
+        float coef=(float)(degree-1-i);
+        // eq() from the supp materials
 		result+=coef*powf(base, exponent)*effectPoly[(i_cnt-1)*degree+i];
 	}
 	return result;
@@ -1942,7 +1951,8 @@ __global__ void g_Spiking_effect_ratio(
 				int i_cnt = input_fireCount[i_idx];
 				i_cnt = i_cnt <= out_size? i_cnt : out_size;
 				i_cnt = i_cnt > 0? i_cnt : 1;
-				ratio=d_Compute_poly(i_cnt, degree, effectPoly, o_cnt);
+                ratio=d_Compute_poly(i_cnt, degree, effectPoly, o_cnt);
+                // ratio = o_cnt == 0 ? 0 : e / float(o_cnt);
 			}
             _sum[tid] += w * ratio;
         }
@@ -1963,13 +1973,15 @@ __global__ void g_Spiking_effect_ratio(
 		float w = weights_s[o_idx];
         int o_cnt = output_fireCount[o_idx];
 		int o_cnt_tmp = o_cnt;
-		float ratio;
+        float ratio;
+        
 		if(o_cnt == 0)
 			ratio=0.5;
 		else{
 			o_cnt_tmp = o_cnt_tmp <= out_size? o_cnt_tmp : out_size;
 			o_cnt_tmp = o_cnt_tmp > 0? o_cnt_tmp : 1;
-			ratio=d_Compute_poly(o_cnt_tmp, degree, effectPoly, o_cnt);
+            ratio=d_Compute_poly(o_cnt_tmp, degree, effectPoly, o_cnt);
+            // ratio = o_cnt == 0 ? 0 : e / float(o_cnt);
 		}
 		_sum[0] += w * ratio;
 	}
