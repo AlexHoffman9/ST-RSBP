@@ -1,0 +1,350 @@
+
+
+
+*******************CONFIG*******************
+Is Gradient Checking : 0
+Has Boost Weight Train: 1
+Use Effect Ratio      : 1
+Use Optimizer         : adam
+lambda                : 10.000000
+beta                  : 0.040000
+weight limit          : 8.000000
+batch Size            : 1
+channels              : 1
+crop                  : -1
+scale                 : 0.000000
+rotation              : 0.000000
+distortion            : 0.000000
+imageShow             : 0
+HORIZONTAL            : 0
+Test_Epoch            : 10
+White Noise           : 0.000000
+Spike end time        : 400
+Train data path       : ./mnist/train-images-idx3-ubyte
+Train label path       : ./mnist/train-labels-idx1-ubyte
+Test data path        : ./mnist/t10k-images-idx3-ubyte
+Test label path        : ./mnist/t10k-labels-idx1-ubyte
+Train samples         : 10000
+Test samples          : 10000
+Train samples per class : -1
+Test samples per class  : -1
+
+
+********data spiking Layer********
+NAME          : data
+INPUT_NEURONS : 784
+
+
+********SPIKING Layer********
+NAME               : hidden_0
+NUM_NEURONS        : 400
+INPUT              : data
+VTH                : 20.000000
+T_REFRAC           : 2
+TAU_M              : 64.000000
+TAU_S              : 8.000000
+initW              : 1.000000
+weightConnect      : 0
+initType           : Bernoulli
+weightPath         : NULL
+lweightPath        : NULL
+laterialType       : NULL
+reservoirDim       : NULL
+localInbStrength   : 0.000000
+UNDESIRED_LEVEL    : 0.000000
+DESIRED_LEVEL      : 0.000000
+MARGIN             : 0.000000
+selfLoopStrength	: 0.000000
+selfLoopRatio	    : 1.000000
+LearingRate        : 0.001000
+refWeightPath      : NULL
+refLWeightPath     : NULL
+refOuputTrainPath  : NULL
+refOutputTestPath  : NULL
+ADD_BIAS           : 0
+BIAS_FREQ          : 100000
+
+
+********RESERVOIR Layer********
+NAME               : reservoir
+NUM_NEURONS        : 400
+INPUT              : hidden_0
+VTH                : 20.000000
+T_REFRAC           : 2
+TAU_M              : 64.000000
+TAU_S              : 8.000000
+initW              : 1.000000
+Train_Reservoir    : 1
+weightConnect      : 0
+initType           : Bernoulli
+weightPath         : NULL
+lweightPath        : NULL
+laterialType       : RESERVOIR
+reservoirDim       : 5x5x16
+localInbStrength   : 0.000000
+UNDESIRED_LEVEL    : 0.000000
+DESIRED_LEVEL      : 0.000000
+MARGIN             : 0.000000
+selfLoopStrength	: 0.000000
+selfLoopRatio	    : 0.000000
+LearingRate        : 0.001000
+refWeightPath      : NULL
+refLWeightPath     : NULL
+refOuputTrainPath  : NULL
+refOutputTestPath  : NULL
+ADD_BIAS           : 0
+BIAS_FREQ          : 100000
+
+
+********SPIKING Layer********
+NAME               : output
+NUM_NEURONS        : 10
+INPUT              : reservoir
+VTH                : 15.000000
+T_REFRAC           : 2
+TAU_M              : 64.000000
+TAU_S              : 8.000000
+initW              : 1.000000
+weightConnect      : 0
+initType           : Bernoulli
+weightPath         : NULL
+lweightPath        : NULL
+laterialType       : LOCAL_INHIBITION
+reservoirDim       : NULL
+localInbStrength   : 1.000000
+UNDESIRED_LEVEL    : 5.000000
+DESIRED_LEVEL      : 35.000000
+MARGIN             : 5.000000
+selfLoopStrength	: 0.000000
+selfLoopRatio	    : 0.000000
+LearingRate        : 0.001000
+refWeightPath      : NULL
+refLWeightPath     : NULL
+refOuputTrainPath  : NULL
+refOutputTestPath  : NULL
+ADD_BIAS           : 0
+BIAS_FREQ          : 100000
+
+
+
+
+
+******************layer nexts start********************
+layer            data:hidden_0 
+layer        hidden_0:reservoir 
+layer       reservoir:output 
+layer          output:
+
+
+******************layer nexts end********************
+epoch=0 time=195.866s cost=299.361115 Momentum=0.900000train performance: 82.20%
+===================weight value================
+hidden_0:
+weight:0.000000, -0.000000, -0.000000;
+bias  :0.000000
+reservoir:
+weight:-0.000000, 0.000000, -0.000000;
+bias  :0.000000
+output:
+weight:-0.000000, -0.736397, -0.000000;
+bias  :0.000000
+===================test Result================
+test 87.04%/87.04%
+===================output fire counts================
+The last sample label: 6
+hidden_0:
+fire count: 0, 0, 9, 47, 9, 0, 23, 0, 42, 13;
+reservoir:
+fire count: 0, 19, 0, 0, 11, 0, 0, 9, 0, 26;
+output:
+fire count: 13, 0, 12, 0, 0, 0, 36, 0, 0, 0;
+epoch=1 time=191.992s cost=222.807297 Momentum=0.900000train performance: 89.10%
+===================weight value================
+hidden_0:
+weight:0.000000, -0.000000, -0.000000;
+bias  :0.000000
+reservoir:
+weight:-0.000000, 0.000000, -0.000000;
+bias  :0.000000
+output:
+weight:-0.000000, -0.719710, -0.000000;
+bias  :0.000000
+===================test Result================
+test 88.64%/88.64%
+===================output fire counts================
+The last sample label: 6
+hidden_0:
+fire count: 0, 0, 20, 45, 3, 0, 10, 0, 39, 11;
+reservoir:
+fire count: 0, 18, 0, 0, 9, 0, 0, 7, 0, 25;
+output:
+fire count: 14, 0, 11, 0, 0, 0, 36, 0, 0, 0;
+epoch=2 time=193.879s cost=211.862000 Momentum=0.900000train performance: 89.76%
+===================weight value================
+hidden_0:
+weight:0.000000, -0.000000, -0.000000;
+bias  :0.000000
+reservoir:
+weight:-0.000000, 0.000000, -0.000000;
+bias  :0.000000
+output:
+weight:-0.000000, -0.691378, -0.000000;
+bias  :0.000000
+===================test Result================
+test 89.08%/89.08%
+===================output fire counts================
+The last sample label: 6
+hidden_0:
+fire count: 0, 0, 26, 46, 3, 0, 0, 0, 37, 11;
+reservoir:
+fire count: 0, 19, 0, 0, 11, 0, 0, 9, 0, 26;
+output:
+fire count: 11, 0, 14, 0, 0, 0, 33, 0, 2, 0;
+epoch=3 time=190.760s cost=204.614594 Momentum=0.900000train performance: 90.30%
+===================weight value================
+hidden_0:
+weight:0.000000, -0.000000, -0.000000;
+bias  :0.000000
+reservoir:
+weight:-0.000000, 0.000000, -0.000000;
+bias  :0.000000
+output:
+weight:-0.000000, -0.663199, -0.000000;
+bias  :0.000000
+===================test Result================
+test 90.09%/90.09%
+===================output fire counts================
+The last sample label: 6
+hidden_0:
+fire count: 0, 0, 28, 45, 3, 0, 0, 0, 34, 12;
+reservoir:
+fire count: 0, 18, 0, 0, 10, 0, 0, 10, 0, 26;
+output:
+fire count: 9, 0, 14, 0, 0, 0, 32, 0, 0, 1;
+epoch=4 time=190.082s cost=198.262604 Momentum=0.900000train performance: 90.49%
+===================weight value================
+hidden_0:
+weight:0.000000, -0.000000, -0.000000;
+bias  :0.000000
+reservoir:
+weight:-0.000000, 0.000000, -0.000000;
+bias  :0.000000
+output:
+weight:-0.000000, -0.633922, -0.000000;
+bias  :0.000000
+===================test Result================
+test 89.56%/90.09%
+===================output fire counts================
+The last sample label: 6
+hidden_0:
+fire count: 0, 0, 30, 45, 0, 0, 0, 0, 32, 10;
+reservoir:
+fire count: 0, 19, 0, 0, 7, 0, 0, 12, 0, 25;
+output:
+fire count: 9, 0, 11, 0, 0, 0, 37, 0, 0, 0;
+epoch=5 time=189.524s cost=195.301407 Momentum=0.900000train performance: 90.78%
+===================weight value================
+hidden_0:
+weight:0.000000, -0.000000, -0.000000;
+bias  :0.000000
+reservoir:
+weight:-0.000000, 0.000000, -0.000000;
+bias  :0.000000
+output:
+weight:-0.000000, -0.617962, -0.000000;
+bias  :0.000000
+===================test Result================
+test 90.05%/90.09%
+===================output fire counts================
+The last sample label: 6
+hidden_0:
+fire count: 0, 0, 32, 44, 0, 0, 0, 0, 31, 13;
+reservoir:
+fire count: 0, 18, 0, 0, 9, 0, 0, 10, 0, 25;
+output:
+fire count: 9, 0, 11, 0, 0, 0, 36, 0, 0, 1;
+epoch=6 time=190.331s cost=192.167206 Momentum=0.900000train performance: 91.03%
+===================weight value================
+hidden_0:
+weight:0.000000, -0.000000, -0.000000;
+bias  :0.000000
+reservoir:
+weight:-0.000000, 0.000000, -0.000000;
+bias  :0.000000
+output:
+weight:-0.000000, -0.593628, -0.000000;
+bias  :0.000000
+===================test Result================
+test 89.77%/90.09%
+===================output fire counts================
+The last sample label: 6
+hidden_0:
+fire count: 0, 0, 33, 43, 1, 0, 0, 0, 27, 12;
+reservoir:
+fire count: 0, 17, 0, 0, 7, 0, 0, 10, 0, 23;
+output:
+fire count: 11, 0, 9, 0, 0, 1, 37, 0, 0, 0;
+epoch=7 time=190.349s cost=190.225998 Momentum=0.900000train performance: 91.04%
+===================weight value================
+hidden_0:
+weight:0.000000, -0.000000, -0.000000;
+bias  :0.000000
+reservoir:
+weight:-0.000000, 0.000000, -0.000000;
+bias  :0.000000
+output:
+weight:-0.000000, -0.585367, -0.000000;
+bias  :0.000000
+===================test Result================
+test 90.59%/90.59%
+===================output fire counts================
+The last sample label: 6
+hidden_0:
+fire count: 0, 0, 34, 42, 1, 0, 0, 0, 25, 12;
+reservoir:
+fire count: 0, 17, 0, 0, 9, 0, 0, 9, 0, 25;
+output:
+fire count: 11, 0, 10, 0, 0, 0, 36, 0, 1, 1;
+epoch=8 time=190.742s cost=187.785797 Momentum=0.900000train performance: 91.25%
+===================weight value================
+hidden_0:
+weight:0.000000, -0.000000, -0.000000;
+bias  :0.000000
+reservoir:
+weight:-0.000000, 0.000000, -0.000000;
+bias  :0.000000
+output:
+weight:-0.000000, -0.576286, -0.000000;
+bias  :0.000000
+===================test Result================
+test 90.80%/90.80%
+===================output fire counts================
+The last sample label: 6
+hidden_0:
+fire count: 0, 0, 35, 40, 1, 0, 0, 0, 22, 11;
+reservoir:
+fire count: 0, 17, 0, 0, 8, 0, 0, 9, 0, 25;
+output:
+fire count: 5, 0, 10, 0, 0, 1, 39, 0, 0, 1;
+epoch=9 time=191.240s cost=186.596207 Momentum=0.900000train performance: 91.36%
+===================weight value================
+hidden_0:
+weight:0.000000, -0.000000, -0.000000;
+bias  :0.000000
+reservoir:
+weight:-0.000000, 0.000000, -0.000000;
+bias  :0.000000
+output:
+weight:-0.000000, -0.555157, -0.000000;
+bias  :0.000000
+===================test Result================
+test 90.75%/90.80%
+===================output fire counts================
+The last sample label: 6
+hidden_0:
+fire count: 0, 0, 36, 38, 1, 0, 0, 0, 16, 12;
+reservoir:
+fire count: 0, 16, 0, 0, 8, 0, 0, 9, 0, 23;
+output:
+fire count: 9, 0, 9, 0, 0, 1, 36, 0, 0, 1;
+training time hours = 0.625921

@@ -396,35 +396,35 @@ void Spiking::backpropagation()
         for effect ratio that is computed in g_spiking_synaptic_effect
     */
 
-	// thread = dim3(min(1024, inputSize));
-	// block  = dim3(batch, outputSize);
-	// g_Spiking_effect_ratio<<<block, thread, sizeof(float) * min(1024, inputSize)>>>(
-	// 	w->getDev(),
-    //     w_self == NULL ? NULL : w_self->getDev(),
-	// 	sumEffectRatio->getDev(),
-    //     preFireCount_format->getDev(),
-    // 	fireCount->getDev(),
-	// 	effectPoly->getDev(),
-	// 	100,
-	// 	5,
-	// 	inputSize,
-	// 	outputSize,
-	// 	threshold);
-	// checkCudaErrors(cudaStreamSynchronize(0));
-	// getLastCudaError("g_Spiking_effect_ratio");
+	 thread = dim3(min(1024, inputSize));
+	 block  = dim3(batch, outputSize);
+	 g_Spiking_effect_ratio<<<block, thread, sizeof(float) * min(1024, inputSize)>>>(
+	 	w->getDev(),
+         w_self == NULL ? NULL : w_self->getDev(),
+	 	sumEffectRatio->getDev(),
+         preFireCount_format->getDev(),
+     	fireCount->getDev(),
+	 	effectPoly->getDev(),
+	 	100,
+	 	5,
+	 	inputSize,
+	 	outputSize,
+	 	threshold);
+	 checkCudaErrors(cudaStreamSynchronize(0));
+	 getLastCudaError("g_Spiking_effect_ratio");
 
-	// g_Spiking_final_effect_ratio<<<block, thread>>>(
-	// 	w->getDev(),
-    //     preFireCount_format->getDev(),
-    //     fireCount->getDev(),
-	// 	effectRatio->getDev(),
-	// 	sumEffectRatio->getDev(),
-	// 	accEffect->getDev(),
-	// 	inputSize,
-	// 	outputSize,
-	// 	threshold);
-	// checkCudaErrors(cudaStreamSynchronize(0));
-	// getLastCudaError("g_Spiking_final_effect_ratio");
+//	 g_Spiking_final_effect_ratio<<<block, thread>>>(
+//	 	w->getDev(),
+//         preFireCount_format->getDev(),
+//         fireCount->getDev(),
+//	 	effectRatio->getDev(),
+//	 	sumEffectRatio->getDev(),
+//	 	accEffect->getDev(),
+//	 	inputSize,
+//	 	outputSize,
+//	 	threshold);
+//	 checkCudaErrors(cudaStreamSynchronize(0));
+//	 getLastCudaError("g_Spiking_final_effect_ratio");
 
     // divide the curDelta by vth
     block = dim3(batch, 1);

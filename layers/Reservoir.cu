@@ -302,8 +302,8 @@ void Reservoir::backpropagation()
 	g_Reservoir_sum_effect_ratio_input<<<block, thread, sizeof(float) * min(1024, inputSize)>>>(
 		w->getDev(),
 		sumEffectRatioInput->getDev(),
-        preFireCount_format->getDev(),
-    	fireCount->getDev(),
+		preFireCount_format->getDev(),
+	    	fireCount->getDev(),
 		effectPoly->getDev(),
 		100,
 		5,
@@ -318,7 +318,7 @@ void Reservoir::backpropagation()
 	g_Reservoir_sum_effect_ratio_reservoir<<<block, thread, sizeof(float) * min(1024, outputSize)>>>(
 		w_laterial->getDev(),
 		sumEffectRatioReservoir->getDev(),
-    	fireCount->getDev(),
+    		fireCount->getDev(),
 		effectPoly->getDev(),
 		100,
 		5,
