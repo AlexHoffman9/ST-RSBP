@@ -13,9 +13,9 @@ R       = 1;
 %% Simulate Spike Process
 % ranges
 T           = 400;
-o_j         = 1:100; % j : input neuron
+o_j         = 1:50; % j : input neuron
 L_j         = length(o_j);
-o_i         = 1:100; % i : output neuron
+o_i         = 1:50; % i : output neuron
 L_i         = length(o_i);
 n_iter      = 100;
 eij         = zeros(L_j,L_i);
@@ -49,7 +49,7 @@ for idx_j = 1:L_j
                 
                 % if the neuron has fired
                 if d_i(t+1) ~= 0
-                    eij(idx_j,idx_i) = eij(idx_j,idx_i) + epsilon(t);
+                    eij(idx_j,idx_i) = eij(idx_j,idx_i) + epsilon(t+1);
                     count = t_ref;
                 end
             end
