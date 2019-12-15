@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.cuh": "cpp"
+    },
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
+}

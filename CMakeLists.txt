@@ -15,7 +15,7 @@ find_package (CUDA REQUIRED)
 include_directories (${CUDA_INCLUDE_DIRS})
 #include_directories (${CUDA_SDK_ROOT_DIR})
 MESSAGE("${CUDA_INCLUDE_DIRS}/../samples/common/inc")
-include_directories ("${CUDA_INCLUDE_DIRS}/../samples/common/inc")
+include_directories ("/usr/local/cuda-10.0/samples/common/inc")
 #/usr/local/cuda/NVIDIA_CUDA-7.0_Samples/common/inc")
 set(CUDA_SEPARABLE_COMPILATION ON)
 

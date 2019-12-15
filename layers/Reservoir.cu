@@ -645,7 +645,7 @@ Reservoir::Reservoir(std::string name)
     matrixRHS = new cuMatrix<float>(outputSize, inputSize, 1);
 
     effectPoly = new cuMatrix<float>(100, 5, 1);
-	std::string filename=std::string("./Effect_Ratio_file/p_Tau_")+std::to_string(int(TAU_M))+std::string("_")+std::to_string(endTime)+std::string("-100.txt");
+	std::string filename=std::string("./Effect_Ratio_file/my_p_Tau_")+std::to_string(int(TAU_M))+std::string("_")+std::to_string(endTime)+std::string("-50.txt");
 	loadPoly(filename, 100, 5, effectPoly);
 	//loadPoly("./Effect_Ratio_file/p_Tau_64_600.txt", 50, 5, effectPoly);
 
